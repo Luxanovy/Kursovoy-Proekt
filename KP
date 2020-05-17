@@ -1,5 +1,4 @@
 #include "MyForm.h"
-// Ex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
 #include <commctrl.h>
@@ -12,21 +11,8 @@
 using namespace std;
 using namespace Project1;
 
-//#define LVS_SORT 0x0002L
-//#define _WIN32_IE 0x0600
-//#if (_WIN32_IE >= 0x0600)
-//#define BTNS_AUTOSIZE	TBSTYLE_AUTOSIZE
-//#endif
-//#define TBSTYLE_AUTOSIZE 16
-//#define BTNS_BUTTON 0
-//#define CCS_VERT 128
-//#define TB_SETIMAGELIST    (WM_USER+48)
-//#define TB_LOADIMAGES 	   (WM_USER+50)
-//
-//#define ID_BUTTON 2313
 
 #define ID_TOOLBAR    100
-#define IDM_CRC       1004
 
 #define ID_LISTVIEW_1   3001
 #define ID_LISTVIEW_2   3002
@@ -54,62 +40,52 @@ static HWND hListView_1, hListView_2;
 static HWND hComboBox_1, hComboBox_2;
 static HWND hLabel_1, hLabel_2, hLabel_3, hLabel_4, hToolBar;
 
-// Declare and initialize local constants.
 const int ImageListID = 0;
-const int numButtons = 6;
+const int numButtons = 5;
 const DWORD buttonStyles = BTNS_AUTOSIZE;
 const int bitmapSize = 16;
+int i;
 
 TBBUTTON tbButtons[numButtons];
 
 void InitToolbar()
 {
-
-	tbButtons[0].iBitmap = MAKELONG(STD_FILENEW, ImageListID);
+	tbButtons[0].iBitmap = MAKELONG(STD_FILENEW, ImageListID); 
 	tbButtons[0].idCommand = IDM_NEW;
 	tbButtons[0].fsState = TBSTATE_ENABLED;
 	tbButtons[0].fsStyle = buttonStyles;
 	tbButtons[0].dwData = 0L;
-	tbButtons[0].iString = (INT_PTR)"New";
+	tbButtons[0].iString = (INT_PTR)"Notepad";
 
-	tbButtons[1].iBitmap = MAKELONG(STD_FILEOPEN, ImageListID);
-	tbButtons[1].idCommand = IDM_OPEN;
+	tbButtons[1].iBitmap = MAKELONG(STD_PROPERTIES, ImageListID);
+	tbButtons[1].idCommand = IDM_RENAME;
 	tbButtons[1].fsState = TBSTATE_ENABLED;
 	tbButtons[1].fsStyle = buttonStyles;
 	tbButtons[1].dwData = 0L;
-	tbButtons[1].iString = (INT_PTR)"Open";
+	tbButtons[1].iString = (INT_PTR)"Rename";
 
-	tbButtons[2].iBitmap = MAKELONG(STD_FILESAVE, ImageListID);
-	tbButtons[2].idCommand = IDM_SAVE;
-	tbButtons[2].fsState = 0;
+	tbButtons[2].iBitmap = MAKELONG(STD_REDOW, ImageListID);
+	tbButtons[2].idCommand = IDM_MOVE;
+	tbButtons[2].fsState = TBSTATE_ENABLED;
 	tbButtons[2].fsStyle = buttonStyles;
 	tbButtons[2].dwData = 0L;
-	tbButtons[2].iString = (INT_PTR)"Save";
+	tbButtons[2].iString = (INT_PTR)"Move";
 
-	tbButtons[3].iBitmap = MAKELONG(STD_COPY, ImageListID);
+	tbButtons[3].iBitmap = MAKELONG(STD_COPY, ImageListID); 
 	tbButtons[3].idCommand = IDM_COPY;
 	tbButtons[3].fsState = TBSTATE_ENABLED;
 	tbButtons[3].fsStyle = BTNS_AUTOSIZE;
 	tbButtons[3].dwData = 0L;
 	tbButtons[3].iString = (INT_PTR)"Copy";
 
-	tbButtons[4].iBitmap = MAKELONG(STD_DELETE, ImageListID);
-	tbButtons[4].idCommand = IDM_DELETEPDFHIGHLIGHT;
+	tbButtons[4].iBitmap = MAKELONG(STD_DELETE, ImageListID); 
+	tbButtons[4].idCommand = IDM_DELETE;
 	tbButtons[4].fsState = TBSTATE_ENABLED;
 	tbButtons[4].fsStyle = buttonStyles;
 	tbButtons[4].dwData = 0L;
 	tbButtons[4].iString = (INT_PTR)"Delete";
-
-	tbButtons[5].iBitmap = MAKELONG(STD_HELP, ImageListID);
-	tbButtons[5].idCommand = IDM_CRC;
-	tbButtons[5].fsState = TBSTATE_ENABLED;
-	tbButtons[5].fsStyle = buttonStyles;
-	tbButtons[5].dwData = 0L;
-	tbButtons[5].iString = (INT_PTR)"Help";
 }
-//---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
 {
 	MSG Msg;
@@ -150,17 +126,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 			DispatchMessage(&msg);
 		}
 	}
-	
-	//while (GetMessage(&Msg, NULL, 0, 0))
-	//{
-	//	DispatchMessage(&Msg);
-	//	TranslateMessage(&Msg);
-	//}
 	return Msg.wParam;
 }
-//---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------
+
 HWND CreateSimpleToolbar(HWND hWndParent)
 {
 	//создание тулбара
@@ -186,7 +154,7 @@ HWND CreateSimpleToolbar(HWND hWndParent)
 	return hWndToolbar;
 }
 
-void AddColToListView(char* st, int sub, int size)
+void AddColumnToListView(char* st, int sub, int size)
 {
 	LVCOLUMN lvc;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
@@ -199,8 +167,7 @@ void AddColToListView(char* st, int sub, int size)
 	ListView_InsertColumn(hListView_2, sub, &lvc);
 }
 
-int i;
-BOOL InitListViewImageLists(HWND hWndListView, int size, char c_dir[MAX_PATH])
+BOOL InitializationListViewImage(HWND hWndListView, int size, char c_dir[MAX_PATH])
 {
 	HIMAGELIST hSmall;
 	SHFILEINFO lp;
@@ -215,8 +182,8 @@ BOOL InitListViewImageLists(HWND hWndListView, int size, char c_dir[MAX_PATH])
 	}
 	else
 	{
-		do {//присваеваем атрибуты
-			if (strcmp(FindFileData.cFileName, ".") == 0) {//если диск
+		do { //присвоение атрибутов
+			if (strcmp(FindFileData.cFileName, ".") == 0) { //Если диск
 				char buf1[MAX_PATH];
 				strcpy(buf1, c_dir);
 				strcat(buf1, FindFileData.cFileName);
@@ -225,7 +192,7 @@ BOOL InitListViewImageLists(HWND hWndListView, int size, char c_dir[MAX_PATH])
 				ImageList_AddIcon(hSmall, lp.hIcon);
 				DestroyIcon(lp.hIcon);
 			}
-			if (strcmp(FindFileData.cFileName, "..") == 0) {//если фаилы,папки
+			if (strcmp(FindFileData.cFileName, "..") == 0)  {// Если фаилы,папки
 				char buf1[MAX_PATH];
 				strcpy(buf1, c_dir);
 				strcat(buf1, FindFileData.cFileName);
@@ -233,8 +200,7 @@ BOOL InitListViewImageLists(HWND hWndListView, int size, char c_dir[MAX_PATH])
 				ImageList_AddIcon(hSmall, lp.hIcon);
 				DestroyIcon(lp.hIcon);
 			}
-			//присваеваем иконки
-			char buf1[MAX_PATH];
+			char buf1[MAX_PATH]; // Присвоение иконки
 			strcpy(buf1, c_dir);
 			buf1[strlen(buf1) - 1] = 0;
 			strcat(buf1, FindFileData.cFileName);
@@ -249,7 +215,7 @@ BOOL InitListViewImageLists(HWND hWndListView, int size, char c_dir[MAX_PATH])
 	return TRUE;
 }
 
-void Viev_List(char* buf, HWND hList, int i, int j)
+void View_List(char* buf, HWND hList, int i, int j)
 {
 	LVITEM lvItem;
 	lvItem.mask = LVIF_IMAGE | LVIF_TEXT;
@@ -266,7 +232,7 @@ void Viev_List(char* buf, HWND hList, int i, int j)
 void FindFile(HWND hList, char c_dir[MAX_PATH])
 {
 	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind; // дескриптор к объекту *********** HWND ручка к окну
+	HANDLE hFind; // Дескриптор к объекту HWND ручка к окну
 	i = 0;
 
 	SendMessage(hList, LVM_DELETEALLITEMS, (WPARAM)0, (LPARAM)0);
@@ -279,19 +245,102 @@ void FindFile(HWND hList, char c_dir[MAX_PATH])
 		do
 		{
 			if ((FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(FindFileData.cFileName)) != FILE_ATTRIBUTE_DIRECTORY)
-				Viev_List("1", hList, i, 1); 
-			else Viev_List("2", hList, i, 1);
+				View_List("1", hList, i, 1); 
+			else View_List("2", hList, i, 1);
 
-			Viev_List(FindFileData.cFileName, hList, i, 0);//выз. ф-ция Viev_List передаем туда наиденый фаил ,и HWND ListBox и итератор i++,
+			View_List(FindFileData.cFileName, hList, i, 0);
 			++i;
 		} while (FindNextFile(hFind, &FindFileData) != 0);
 
-		(hFind); //закрываем работу поиска фаилов
-		InitListViewImageLists(hList, i, c_dir);//тут уже передаем HWND ListBox, и кол-во фаилов
+		(hFind); // Закрытие работу поиска фаилов
+		InitializationListViewImage(hList, i, c_dir); 
 	}
 }
 
+void Rename()
+{
+	char cm_dir_from[MAX_PATH];
+	strcpy(cm_dir_from, dir);
+	cm_dir_from[strlen(cm_dir_from) - 1] = 0;
+	strcat(cm_dir_from, copy_buf1);
 
+	TCHAR from[MAX_PATH];
+	ZeroMemory(from, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(from, cm_dir_from, sizeof(TCHAR) * strlen(cm_dir_from));
+
+	SHFILEOPSTRUCT file_move;
+	ZeroMemory(&file_move, sizeof(SHFILEOPSTRUCT));
+	file_move.hwnd = NULL;
+	file_move.wFunc = FO_MOVE;
+	file_move.pFrom = cm_dir_from;
+	file_move.fFlags = FOF_RENAMEONCOLLISION;
+	int result = SHFileOperation(&file_move);
+	if (result != 0)
+	{
+		MessageBoxA(0, "Файл не переименован.", "", MB_ICONEXCLAMATION);
+	}
+	else
+	{
+		FindFile(hListView_1, dir);
+	}
+}
+
+void Move()
+{
+	char cm_dir_from[MAX_PATH];
+	char cm_dir_to[MAX_PATH], cm_dir_to_[MAX_PATH];
+	strcpy(cm_dir_from, dir);
+	cm_dir_from[strlen(cm_dir_from) - 1] = 0;
+	strcat(cm_dir_from, copy_buf1);
+	strcpy(cm_dir_to, dir1);
+	strcpy(cm_dir_to_, dir1);
+	cm_dir_to[strlen(cm_dir_to) - 1] = 0;
+	strcat(cm_dir_to, copy_buf1);
+
+	TCHAR from[MAX_PATH];
+	ZeroMemory(from, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(from, cm_dir_from, sizeof(TCHAR) * strlen(cm_dir_from));
+
+	TCHAR to[MAX_PATH];
+	ZeroMemory(to, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(to, cm_dir_to, sizeof(TCHAR) * strlen(cm_dir_to));
+
+	SHFILEOPSTRUCT file_move;
+	ZeroMemory(&file_move, sizeof(SHFILEOPSTRUCT));
+	file_move.hwnd = NULL;
+	file_move.wFunc = FO_MOVE;
+	file_move.pFrom = from;
+	file_move.pTo = to;
+	file_move.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SIMPLEPROGRESS;
+	int message = MessageBoxA(0, cm_dir_from, "Вы точно хотите переместить файл?", MB_ICONQUESTION | MB_OKCANCEL);
+	if (message != IDCANCEL)
+	{
+		MessageBoxA(0, cm_dir_to, "Перемещение в:", MB_ICONEXCLAMATION);
+		int result = SHFileOperation(&file_move);
+		if (result != 0)
+		{
+			MessageBoxA(0, "Файл не перемещён.", "", MB_ICONEXCLAMATION);
+		}
+		else
+		{
+			FindFile(hListView_1, dir);
+			FindFile(hListView_2, cm_dir_to_);
+			MessageBoxA(0, "Файл перемещён.", "", MB_ICONEXCLAMATION);
+		}
+	}
+}
+
+void notepad()
+{
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(STARTUPINFO));
+	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+	si.cb = sizeof(STARTUPINFO);
+	si.dwFlags = STARTF_USEPOSITION;
+	si.wShowWindow = SW_MAXIMIZE;
+	CreateProcess(NULL, "NOTEPAD", NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+}
 
 void CopyFile()
 {
@@ -300,15 +349,41 @@ void CopyFile()
 	strcpy(cm_dir_from, dir);
 	cm_dir_from[strlen(cm_dir_from) - 1] = 0;
 	strcat(cm_dir_from, copy_buf1);
-	MessageBoxA(0, cm_dir_from, "FILE", 0);
 	strcpy(cm_dir_to, dir1);
 	strcpy(cm_dir_to_, dir1);
 	cm_dir_to[strlen(cm_dir_to) - 1] = 0;
 	strcat(cm_dir_to, copy_buf1);
-	MessageBoxA(0, cm_dir_to, "FILE", 0);
-	CopyFile(cm_dir_from, cm_dir_to, FALSE);
-	MessageBoxA(0, "Файл скопирован.", "", 0);
-	FindFile(hListView_2, cm_dir_to_);
+
+	TCHAR from[MAX_PATH];
+	ZeroMemory(from, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(from, cm_dir_from, sizeof(TCHAR) * strlen(cm_dir_from));
+
+	TCHAR to[MAX_PATH];
+	ZeroMemory(to, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(to, cm_dir_to, sizeof(TCHAR) * strlen(cm_dir_to));
+
+	SHFILEOPSTRUCT file_copy;
+	ZeroMemory(&file_copy, sizeof(SHFILEOPSTRUCT));
+	file_copy.hwnd = NULL;
+	file_copy.wFunc = FO_COPY;
+	file_copy.pFrom = from;
+	file_copy.pTo = to;
+	file_copy.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SIMPLEPROGRESS;
+	int message = MessageBoxA(0, cm_dir_from, "Вы точно хотите скопировать файл?", MB_ICONQUESTION | MB_OKCANCEL);
+	if (message != IDCANCEL)
+	{
+		MessageBoxA(0, cm_dir_to, "Копирование в:", MB_ICONEXCLAMATION);
+		int result = SHFileOperation(&file_copy);
+		if (result != 0)
+		{
+			MessageBoxA(0, "Файл не скопирован.", "", MB_ICONEXCLAMATION);
+		}
+		else 
+		{
+			FindFile(hListView_2, cm_dir_to_);
+			MessageBoxA(0, "Файл скопирован.", "", MB_ICONEXCLAMATION);
+		}
+	}
 }
 
 void DelFile()
@@ -318,9 +393,30 @@ void DelFile()
 	strcpy(cm_dir_from_, dir);
 	cm_dir_from[strlen(cm_dir_from) - 1] = 0;
 	strcat(cm_dir_from, copy_buf1);
-	DeleteFile(cm_dir_from);
-	MessageBoxA(0, "Файл удалён.", "", 0);
-	FindFile(hListView_1, cm_dir_from_);
+
+	TCHAR _basket[MAX_PATH];
+	ZeroMemory(_basket, sizeof(TCHAR) * MAX_PATH);
+	CopyMemory(_basket, cm_dir_from, sizeof(TCHAR) * strlen(cm_dir_from));
+	SHFILEOPSTRUCT file_del;
+	ZeroMemory(&file_del, sizeof(SHFILEOPSTRUCT));
+	file_del.hwnd = NULL;
+	file_del.wFunc = FO_DELETE;
+	file_del.pFrom = _basket;
+	file_del.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SIMPLEPROGRESS;
+	int message = MessageBoxA(0,cm_dir_from, "Вы точно хотите удалить файл?", MB_ICONQUESTION | MB_OKCANCEL);
+	if (message != IDCANCEL)
+	{
+		int result = SHFileOperation(&file_del);
+		if (result != 0)
+		{
+			MessageBoxA(0, "Файл не удалён.", "", MB_ICONEXCLAMATION);
+		}
+		else {
+			FindFile(hListView_1, cm_dir_from_);
+			FindFile(hListView_2, cm_dir_from_); 
+			MessageBoxA(0, "Файл удалён.", "", MB_ICONEXCLAMATION); 
+		}
+	}
 }
 
 void ComboProcessing(HWND hComboBox, HWND hLabel, HWND hListView, char _dir[MAX_PATH])
@@ -361,38 +457,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (LOWORD(wParam))
 		{
+		case IDM_NEW:
+		{
+			notepad();
+			return 0;
+		}
+		case IDM_RENAME:
+		{
+			Rename();
+			return 0;
+		}
+		case IDM_MOVE:
+		{
+			Move();
+			return 0;
+		}
 		case IDM_COPY:
 		{
 			CopyFile();
 			return 0;
 		}
-		case IDM_DELETEPDFHIGHLIGHT:
+		case IDM_DELETE:
 		{
 			DelFile();
 			return 0;
 		}
-		/*case IDM_CRC:
-		{
-			DWORD sum1 = 0;
-			DWORD sum2 = 0;
-			LPCTSTR s;
-			char cm_dir_from[MAX_PATH];
-			char cm_dir_to[MAX_PATH];
-			strcpy(cm_dir_from, dir);
-			cm_dir_from[strlen(cm_dir_from) - 1] = 0;
-			strcpy(cm_dir_to, dir1);
-			cm_dir_to[strlen(cm_dir_to) - 1] = 0;
-			strcat(cm_dir_from, "*");
-			strcat(cm_dir_to, "*");
-
-			s = SumCrcFile(cm_dir_from);
-			sum1 = GetCheckSum((CHAR*)s);
-			s = SumCrcFile(cm_dir_to);
-			sum2 = GetCheckSum((CHAR*)s);
-			if (sum1 == sum2) MessageBoxA(0, "Одинаковые каталоги.", "", 0); 
-			else MessageBoxA(0, "Разные каталоги!", "", 0);
-			return 0;
-		}*/
 		case ID_COMBOBOX_1:
 		{
 			switch (HIWORD(wParam))
@@ -433,20 +522,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			_dir[strlen(_dir) - 1] = 0;
 			strcat(_dir, buf1);
 
-			if ((FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(_dir)) == FILE_ATTRIBUTE_DIRECTORY)
-			{
-				SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_COPY, (LPARAM)MAKELONG(0, 0));
-				SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_DELETEPDFHIGHLIGHT, (LPARAM)MAKELONG(0, 0));
-			}
-			else
-			{
-				SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_COPY, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
-				SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_DELETEPDFHIGHLIGHT, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
-			}
+			SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_NEW, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
+			SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_RENAME, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
+			SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_MOVE, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
+			SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_COPY, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
+			SendMessage(hToolBar, TB_SETSTATE, (WPARAM)IDM_DELETE, (LPARAM)MAKELONG(TBSTATE_ENABLED, 0));
 		}
 		if (((lpnmHdr->idFrom == ID_LISTVIEW_1) || (lpnmHdr->idFrom == ID_LISTVIEW_2)) && (lpnmHdr->code == NM_DBLCLK))
 		{
-			// Копируем строку в буфер из ячейки ListView (pnmLV->iItem - номер строки;
+			// Копирование строки в буфер из ячейки ListView (pnmLV->iItem - номер строки;
 			// pnmLV->iSubItem - номер столбца)
 			ListView_GetItemText(lpnmHdr->hwndFrom, pnmLV->iItem, pnmLV->iSubItem, buf1, MAX_PATH);
 
@@ -555,8 +639,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		hToolBar = CreateSimpleToolbar(hwnd);
 
-		//hLabel_1 = CreateWindow("static", "about1",WS_CHILD | WS_VISIBLE | WS_TABSTOP, 104, 35+y, 100, 16, hwnd, (HMENU)ID_LABEL_1, hInstance, NULL);
-		//hLabel_2 = CreateWindow("static", "about2",WS_CHILD | WS_VISIBLE | WS_TABSTOP,	554, 35+y, 100, 16,	hwnd, (HMENU)ID_LABEL_2, hInstance, NULL);
 		hLabel_3 = CreateWindow("static", "way1",	WS_CHILD | WS_VISIBLE | WS_TABSTOP,	3, 57 + y, 400, 16,	hwnd, (HMENU)ID_LABEL_3, hInstance, NULL);
 		hLabel_4 = CreateWindow("static", "way2",	WS_CHILD | WS_VISIBLE | WS_TABSTOP,	453, 57 + y, 400, 16,	hwnd, (HMENU)ID_LABEL_4, hInstance, NULL);
 
@@ -573,19 +655,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hComboBox_2, CB_ADDSTRING, 0, (LPARAM)ls);
 			ls += strlen(ls) + 1;
 		}
+
 		SendMessage(hComboBox_1, CB_SETCURSEL, 1, 0);
 		SendMessage(hComboBox_2, CB_SETCURSEL, 1, 0);
 
-		AddColToListView("Имя", 1, 100);
-		AddColToListView("Тип", 2, 50);
-		AddColToListView("Размер", 3, 50);
-
-		//SetWindowText(hLabel_3, dir);
+		AddColumnToListView("Имя", 1, 100);
 		FindFile(hListView_1, dir);
 		SetWindowText(hLabel_3, dir);
 		FindFile(hListView_2, dir);
 		SetWindowText(hLabel_4, dir1);
-
 		return 0;
 	}
 	case WM_DESTROY:
@@ -603,7 +681,5 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	}
-
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
